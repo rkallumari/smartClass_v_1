@@ -1,0 +1,247 @@
+<html>
+    <head>
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+        <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+            crossorigin="anonymous">
+        </script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.7.8/angular.min.js"></script>
+        <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" 
+            integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" 
+                integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous">
+        </script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.8/angular-route.js"></script>
+        <!-- <script src="https://cdnjs.com/libraries/Chart.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-charts/0.2.7/angular-charts.js"></script> -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+        <script src="https://cdn.jsdelivr.net/angular.chartjs/latest/angular-chart.min.js"></script>
+        <script src="../js/mainController.js"></script>
+        <script src="../js/questionsCtrl.js"></script>
+        <link href="../css/main.css" rel="stylesheet">
+    </head>
+    <body>
+        <div class="container" ng-app="myApp" ng-controller="myCtrl">
+            <div class="Header">
+                <h1>Smart Class</h1>
+            </div>
+            <div ng-if="!authenticated">
+                <h2>Login Page</h2>
+                <p ng-if = "loginResult != undefined" class="wrong">{{loginResult}}</p>
+                <div class="loginContainer">
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">You are a</span>
+                        </div>
+                        <label class="radio-inline"><input ng-model="user.type" type="radio" name="type" value="admin">Admin</label>
+                        <label class="radio-inline"><input type="radio" ng-model="user.type" name="type" value="student">Student</label>
+                        <label class="radio-inline"><input ng-model="user.type" type="radio" name="type" value="teacher">Teacher</label>
+                        <label class="radio-inline"><input ng-model="user.type" type="radio" name="type" value="manager">Manager</label>
+                    </div>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="basic-addon1">UserName</span>
+                        </div>
+                        <input class="form-control" placeholder="User Id" type="text" ng-model="user.name">
+                    </div>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="basic-addon1">Password</span>
+                        </div>
+                        <input class="form-control" type="password" placeholder="Password" type="text" ng-model="user.password">
+                    </div>
+                    <div>
+                        <button class="btn btn-outline-primary" ng-click="login()">Login</button>
+                    </div>
+                </div>
+            </div>
+            <div ng-if="authenticated && managerFlow">
+                <h2>Manager Page <button style="float: right" class = "btn btn-outline-primary" ng-click="logout()">Logout</button></h2> 
+                <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Select what you want to do
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <a href="#" ng-click="questionsReport()" class="dropdown-item">Generate Questions report</a>
+                        <a href="#" ng-click="attemptsReport()" class="dropdown-item">Generate Attempts report</a>
+                    </div>
+                </div>
+                <div ng-show="showQuestionsReport" class = "questionArea">
+                    <h3>Attempts Question Wise Report</h3>
+                    <canvas id="bar" class="chart chart-bar"
+                        chart-data="data" chart-labels="labels" chart-series="series">
+                    </canvas>
+                </div>
+                <div ng-show="showAttemptsReport">
+                    <h3>Total Attempt report</h3>
+                    <canvas id="pie" class="chart chart-pie"
+                        chart-data="data" chart-labels="labels" chart-options="options">
+                    </canvas> 
+                </div>
+            </div>
+            <div ng-if="authenticated && adminFlow">
+                <h2>Admin Page <button style="float: right" class = "btn btn-outline-primary" ng-click="logout()">Logout</button></h2>
+                <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Select what you want to do
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <a href="#" ng-click="chooseAction('create')" class="dropdown-item">Create User</a>
+                        <a href="#" ng-click="chooseAction('update')" class="dropdown-item">Update Password</a>
+                    </div>
+                </div>
+                <div class="admiContainer" ng-if="adminAction != undefined">
+                        <h3 ng-if="adminAction == 'create'">Create a new user</h3>
+                        <h3 ng-if="adminAction == 'update'">Update the password of a user</h3>
+                        <p ng-show="adminResult != undefined" id="adminRes">{{adminResult}}</p>
+                        <div class="input-group mb-3 MCQues">
+                            <div class="input-group-prepend">
+                                <span ng-if="adminAction == 'create'" class="input-group-text">What type of user you want to create?</span>
+                                <span ng-if="adminAction == 'update'" class="input-group-text">Choose the type of the user</span>
+                            </div>
+                            <label class="radio-inline"><input ng-model="admin.user.type" type="radio" name="type" value="admin">Admin</label>
+                            <label class="radio-inline"><input type="radio" ng-model="admin.user.type" name="type" value="student">Student</label>
+                            <label class="radio-inline"><input ng-model="admin.user.type" type="radio" name="type" value="teacher">Teacher</label>
+                            <label class="radio-inline"><input ng-model="admin.user.type" type="radio" name="type" value="manager">Manager</label>
+                        </div>
+                        <div class="input-group mb-3" ng-if="adminAction == 'create'">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon1">UserName</span>
+                            </div>
+                            <input class="form-control" placeholder="User Name" type="text" ng-model="admin.user.name">
+                        </div>
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon1">UserId</span>
+                            </div>
+                            <input class="form-control" placeholder="User Id" type="text" ng-model="admin.user.id">
+                        </div>
+                        <div class="input-group mb-3" ng-if="adminAction == 'create'">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon1">Email</span>
+                            </div>
+                            <input class="form-control" placeholder="Email ID" type="email" ng-model="admin.user.email">
+                        </div>
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon1">Password</span>
+                            </div>
+                            <input class="form-control" type="password" placeholder="Password" type="text" ng-model="admin.user.password">
+                        </div>
+                        <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="basic-addon1">Confirm Password</span>
+                                </div>
+                                <input class="form-control" type="password" ng-blur="confirmPassword()" placeholder="Password" type="text" ng-model="admin.user.confirmpassword">
+                                <p class="wrong" ng-if="!passwordMatch">The passwords doesnt match to the initial one</p>
+                            </div>
+                        <div>
+                            <button class="btn btn-outline-primary" ng-if="adminAction == 'create'" ng-disabled="admin.user.name == undefined || admin.user.id == undefined || admin.user.password == undefined || admin.user.confirmpassword == undefined || admin.user.confirmpassword == undefined || !passwordMatch" ng-click="createUser()">Create user</button>
+                            <button class="btn btn-outline-primary" ng-if="adminAction == 'update'" ng-disabled="admin.user.id == undefined || admin.user.password == undefined || admin.user.confirmpassword == undefined || !passwordMatch" ng-click="updateUser()">Update user</button>
+                        </div>
+                    </div>
+            </div>
+            <div ng-if="authenticated && questionQuiz">
+                <h2>Student Questions Quiz Page <button style="float: right" class = "btn btn-outline-primary" ng-click="logout()">Logout</button></h2>
+                <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      Select the question type
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <a href="#" ng-repeat="x in questionTypes" ng-click="getQuestions(x.key, x.value)" class="dropdown-item">{{x.value}}</a>
+                    </div>
+                  </div>
+                  <div class="questionsContainer" ng-if="questions != undefined">
+                      <h3>{{questionType}}</h3>
+                      <p ng-if="updateMessage != undefined && submitted">{{updateMessage}}</p>
+                      <div ng-repeat="question in questions" class='questions'>
+                          <div>
+                              <p>{{question.ques}}</p>
+                              <input ng-if="question.type == 'SA'" id= "qid_{{question.qid}}" type = "text"/>
+                              <label ng-if="question.type == 'YN'" class="radio-inline"><input type="radio" ng-click="answerChecked(question.qid,'Y')" name="qid_{{question.qid}}" value="Y">Yes</label>
+                              <label ng-if="question.type == 'YN'" class="radio-inline"><input type="radio" ng-click="answerChecked(question.qid,'N')" name="qid_{{question.qid}}" value="N">No</label>
+                              <label ng-if="question.type == 'MCQ'" ng-repeat= "y in question.options" class="radio-inline"><input type="radio" ng-click="answerChecked(question.qid,y.value)" name="qid_{{question.qid}}" value="{{y.value}}">{{y.key}}</label>
+                              <textarea rows="4" cols="50" ng-if="question.type == 'LA'" id="qid_{{question.qid}}"></textarea>
+                              <p class="correct" id="qid_correct_{{question.qid}}" style="display:none">Correct</p>
+                              <p class="wrong" id="qid_wrong_{{question.qid}}" style="display:none">Wrong</p>
+                          </div>
+                      </div>
+                      <button class="btn btn-outline-primary" ng-click="checkAnswers(questions)" ng-disabled="submitted">Submit</button>
+                      <button class="btn btn-outline-secondary" ng-click="refresh(questions)" ng-disabled="!submitted">Refresh</button>
+                  </div>
+            </div>
+            <div ng-if="authenticated && createQuestions">
+                <h2>Teachers Questions Creation Page<button style="float: right" class = "btn btn-outline-primary" ng-click="logout()">Logout</button></h2>
+                <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Select the question type
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <a href="#" ng-repeat="x in questionTypes" ng-click="setQuestionType(x.key, x.value)" class="dropdown-item">{{x.value}}</a>
+                    </div>
+                </div>
+                <div ng-if="quesType != undefined" class="questionArea">
+                    <h3>{{quesType.value}}</h3>
+                    <p ng-if="questionCreated != undefined && created" class="correct">{{questionCreated}}</p>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="basic-addon1">Enter the question</span>
+                        </div>
+                        <input class="form-control" placeholder="Type Question Here" type="text" ng-model="question.ques">
+                    </div>
+                    <div ng-if="quesType.key == 'YN'">
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">Choose the answer</span>
+                            </div>
+                            <label class="radio-inline"><input ng-model="question.ans" type="radio" name="YNAns" value="Y">Yes</label>
+                            <label class="radio-inline"><input ng-model="question.ans" type="radio"  name="YNAns" value="N">No</label>
+                        </div>
+                    </div>
+                    <div ng-if="quesType.key == 'SA'">
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">Type the answer (max 3 words)</span>
+                            </div>
+                            <input class="form-control" placeholder="Type Answer Here" type="text" ng-model="question.ans">
+                        </div>
+                    </div>
+                    <div ng-if="quesType.key == 'LA'">
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">Type the answer (limit to 2 lines)</span>
+                            </div>
+                            <textarea class="form-control" placeholder="Type Long Answer Here" type="text" ng-model="question.ans">
+                            </textarea>
+                        </div>
+                    </div>
+                    <div ng-if="quesType.key == 'MCQ'">
+                        <div class="input-group mb-3 MCQues">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">Type the four options separated by comma</span>
+                            </div>
+                            <input class="form-control" placeholder="Short Answer" type="text" ng-model="question.options">
+                            <button ng-click="constructOptions()" class="btn btn-outline-secondary">Confirm Options</button>
+                        </div>
+                        <div class="input-group mb-3" ng-if="optionsList != undefined">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">Choose the answer</span>
+                            </div>
+                            <label class="radio-inline" ng-repeat = "opt in optionsList"><input ng-model="question.ans" type="radio" name="options" value="{{opt.value}}">{{opt.key}}</label>
+                        </div>
+                    </div>
+                    <button class="btn btn-outline-primary" ng-click="createQuestion()">Create Question</button>
+                </div>
+                <div ng-if="createdQuestions != undefined && createdQuestions.length>0">
+                    <h4>Questions created so far by you in this session</h4>
+                    <div ng-repeat="q in createdQuestions">
+                        <p>Question: {{q.ques}}</p>
+                        <p ng-if="q.type == 'MCQ' && q.options != undefined" ng-repeat="o in q.options">{{o.value}}  {{o.key}}</p>
+                        <p>Answer: {{q.ans}}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="footer"></div>
+        </div>
+    </body>
+</html>

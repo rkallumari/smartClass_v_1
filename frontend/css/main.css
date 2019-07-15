@@ -1,0 +1,59 @@
+.radio-inline {
+    position: relative;
+    display: inline-block;
+    padding-left: 20px;
+    margin-bottom: 0;
+    font-weight: 400;
+    vertical-align: middle;
+    cursor: pointer;
+}
+
+.input-group {
+    width: 50% !important;
+}
+
+.correct {
+    color: #04b904;
+}
+
+.wrong {
+    color: #d21515;
+    width: 100%;
+}
+
+.questions {
+    background-color: lightgrey;
+    padding: 15px;
+    margin: 5px;
+}
+
+.radio-inline {
+    position: relative;
+    display: inline-block;
+    padding-left: 20px;
+    margin-bottom: 0;
+    font-weight: 400;
+    vertical-align: middle;
+    cursor: pointer;
+}
+
+h1 {
+    text-align: center;
+}
+
+.loginContainer {
+    margin: 15px;
+}
+
+.admiContainer {
+    margin: 15px;
+}
+
+.MCQues {
+    width: 100% !important;
+}
+
+.questionArea {
+    margin-top: 25px;
+    margin-bottom: 25px;
+}
