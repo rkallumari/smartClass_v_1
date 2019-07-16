@@ -12,12 +12,9 @@
                 integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous">
         </script>
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.8/angular-route.js"></script>
-        <!-- <script src="https://cdnjs.com/libraries/Chart.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-charts/0.2.7/angular-charts.js"></script> -->
         <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
         <script src="https://cdn.jsdelivr.net/angular.chartjs/latest/angular-chart.min.js"></script>
         <script src="../js/mainController.js"></script>
-        <script src="../js/questionsCtrl.js"></script>
         <link href="../css/main.css" rel="stylesheet">
     </head>
     <body>
@@ -25,6 +22,8 @@
             <div class="Header">
                 <h1>Smart Class</h1>
             </div>
+
+            <!-- Login page section -->
             <div ng-if="!authenticated">
                 <h2>Login Page</h2>
                 <p ng-if = "loginResult != undefined" class="wrong">{{loginResult}}</p>
@@ -55,6 +54,8 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Manager page section -->
             <div ng-if="authenticated && managerFlow">
                 <h2>Manager Page <button style="float: right" class = "btn btn-outline-primary" ng-click="logout()">Logout</button></h2> 
                 <div class="dropdown">
@@ -64,6 +65,7 @@
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                         <a href="#" ng-click="questionsReport()" class="dropdown-item">Generate Questions report</a>
                         <a href="#" ng-click="attemptsReport()" class="dropdown-item">Generate Attempts report</a>
+                        <a href="#" ng-click="studentReport()" class="dropdown-item">Generate Report Per Student</a>
                     </div>
                 </div>
                 <div ng-show="showQuestionsReport" class = "questionArea">
@@ -78,7 +80,24 @@
                         chart-data="data" chart-labels="labels" chart-options="options">
                     </canvas> 
                 </div>
+                <div ng-show="showStudentReport">
+                    <h3>Individual Student Report</h3>
+                    <div class="dropdown">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Select the student
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <a href="#" ng-repeat="x in studentList" ng-click="studentChecked(x)" class="dropdown-item">{{x.userId}}</a>
+                        </div>
+                    </div>
+                    <p ng-if="checkedStudent != undefined">Report for {{checkedStudent}}</p>
+                    <canvas id="pieStudent" style="display:none" class="chart chart-pie"
+                        chart-data="dataStudent" chart-labels="labelsStudent" chart-options="optionsStudent">
+                    </canvas> 
+                </div>
             </div>
+
+            <!-- Admin page section -->
             <div ng-if="authenticated && adminFlow">
                 <h2>Admin Page <button style="float: right" class = "btn btn-outline-primary" ng-click="logout()">Logout</button></h2>
                 <div class="dropdown">
@@ -141,6 +160,8 @@
                         </div>
                     </div>
             </div>
+
+            <!-- Student page section -->
             <div ng-if="authenticated && questionQuiz">
                 <h2>Student Questions Quiz Page <button style="float: right" class = "btn btn-outline-primary" ng-click="logout()">Logout</button></h2>
                 <div class="dropdown">
@@ -170,6 +191,8 @@
                       <button class="btn btn-outline-secondary" ng-click="refresh(questions)" ng-disabled="!submitted">Refresh</button>
                   </div>
             </div>
+
+            <!-- Teachers Page section -->
             <div ng-if="authenticated && createQuestions">
                 <h2>Teachers Questions Creation Page<button style="float: right" class = "btn btn-outline-primary" ng-click="logout()">Logout</button></h2>
                 <div class="dropdown">
@@ -241,6 +264,7 @@
                     </div>
                 </div>
             </div>
+            
             <div class="footer"></div>
         </div>
     </body>
