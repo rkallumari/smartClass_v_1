@@ -7,10 +7,44 @@
 const MongoClient = require('mongodb').MongoClient;
  
 // Connection URL
-const url = 'mongodb://localhost:27017';
+const url = 'mongodb://localhost:27017/';
  
 // Database Name
-const dbName = 'local';
+const dbName = 'myDb';
+
+//Intiating the db
+MongoClient.connect(url, function(err, db) {
+  if (err) throw err;
+  var dbo = db.db(dbName);
+  dbo.createCollection("Login", function(err, res) {
+    if (err) throw err;
+    console.log("Collection created!");
+    readFromDb('Login', {'userId':'admin'}, function(result){
+      if(result != undefined && result.length > 0){
+        //do nothing
+      } else {
+        var user = [{
+          'userId' : 'admin',
+          'userName' : 'admin',
+          'password' : 'admin',
+          'userType' : 'admin',
+          'emailId' : 'admin@example.com',
+          'emailConfirmed' : true,
+          'questionsAttempted': []
+        }];
+        insertDocs('Login', user, function(result){
+          console.log('Admin created')
+        })
+      }
+    })
+    db.close();
+  });
+  dbo.createCollection("questions", function(err, res) {
+    if (err) throw err;
+    console.log("Collection created!");
+    db.close();
+  });
+});
 
 /**
  * Function to read from the db

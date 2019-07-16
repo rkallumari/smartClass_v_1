@@ -308,7 +308,7 @@ app.controller('myCtrl', function($scope, $http, $location) {
     makeGetCall(url, function(result) {
       var questions = result.data;
       var positiveAttempts = 0;
-      var negativeAttempts = 1;
+      var negativeAttempts = 0;
       questions.forEach(element => {
         positiveAttempts += element.correct;
         negativeAttempts += element.wrong;
@@ -414,7 +414,7 @@ app.controller('myCtrl', function($scope, $http, $location) {
   function teacherFlow() {
     $scope.createQuestions = true;
     $scope.questionTypes =[];
-    var uri = endpoint + 'questionTypes';
+    var uri = endpoint + 'completeQuestionTypes';
     makeGetCall(uri, function(response) {
       $scope.questionTypes = response.data;
     });

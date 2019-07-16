@@ -43,6 +43,15 @@ app.get('/questionTypes', function (req, res) {
   getQuestionTypes(res);
 });
 
+app.get('/completeQuestionTypes', function (req, res) {
+  var types = []
+  types.push({'key':'MCQ','value':'Multiple Choice Questions'});
+  types.push({'key':'SA','value':'Short Answer Questions'});
+  types.push({'key':'LA','value':'Long Answer Questions'});
+  types.push({'key':'YN','value':'Yes/No Questions'});
+  res.send(types);
+});
+
 app.post('/updateAttempt', function (req, res) {
   var user = req.body.user;
   var attempts = req.body.attempt;
